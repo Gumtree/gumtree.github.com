@@ -1,0 +1,183 @@
+Gumtree Workshop Module 2: Scripting
+====================================
+
+Introduction
+------------
+
+'Scripting' is essentially putting commands that we might type in
+one by one into a file that is then read in and executed.  In addition to
+sequences of simple manipulations, it is now
+convenient to include 'control flow' type commands, (such as `if...then...else`
+statements), and define functions that are executed later.
+
+Scripting environment
+---------------------
+
+The scripting environment in Gumtree includes the Array and Dataset objects and
+plotting windows that we have just learnt about.  It also includes 
+functions to create GUI elements, and access to everything in the Java
+Virtual Machine.
+
+### Libraries
+
+As soon as we start writing multiple scripts, we will build up a library of
+functions or routines that do generic tasks, for example, a
+routine to calculate wavelength from our instrument settings.  We would
+typically put these routines into a separate file and use the Python
+`import` command to read them in.  Here is a simple routine which just
+returns the formatted date:
+
+~~~python
+from datetime import datetime
+
+def format_time():
+    return datetime.isoformat(datetime.utcnow())
+~~~
+
+I have saved this in a random directory. The Python interpreter will not know where
+to look for this file, so I should add the path to this file to the Python search
+path, following which I can import the script and execute it:
+
+~~~
+>> sys.path = ['/home/jrh/Talks/Gumtree_Workshop/Workshop_scripts'] + sys.path
+>> sys.path[0]
+'/home/jrh/Talks/Gumtree_Workshop/Workshop_scripts'
+>> import demo_script
+>> print demo_script.format_time()
+2014-02-11T01:54:47.640000
+~~~
+
+### Graphical User Interface
+
+#### Building the GUI
+
+Building GUIs can be very tedious in many languages, taking hundreds of lines. Gumpy provides some nice Python commands that
+allow us to build a GUI in just a few lines.  The following commands describe a GUI that takes advantage 
+of our time printing routine:
+
+~~~python
+st = Par('bool','False')      #Create a tick box
+st.title = 'Show the time'    #A nice label
+addon = Par('string','Stardate ') #Additional text
+addon.title = 'Prepend this:' #Explain to the user
+Group('Time').add(st,addon)   #All inside a box labelled 'Time'
+                              #A blank line to make it look nice
+def __run_script__(fns):      #Predefined function name
+    import demo_script        #Get access to our time printing function
+    if st.value is True:      #The user wants to know the time
+        print addon.value + demo_script.format_time()  #Print the time
+    else:                     #The user doesn't want the time
+        print 'Madness takes control'   #Print something else
+~~~
+
+The process of building a Gumtree GUI is essentially to group together
+a bunch of GUI elements into a 'Group'. The elements are created
+by calling `Par(<type>,<default>,options=<option list>)`.  Possible
+types include:
+
+'bool'
+:   a checkbox which is True if ticked
+'string' 
+:   a string
+'file'
+:   a file from the filesystem
+'int'
+:   an integer
+'float' 
+:   a floating-point number
+
+Then, call `Group` with a string label and `add` to add the elements in
+the order that you wish them to appear. 
+
+#### Accessing the GUI values
+
+In order to act on the user's choices in the GUI, you will need to find out what
+values they have input or chosen.  That is why you needed to assign each call of `Par` to a variable.
+The current value of a GUI item is available in the `value` attribute of that variable.
+
+#### Special function names
+
+When the user presses the 'Run' button, what happens?  Very simply, the function called
+`__run_script__` is called with the list of selected files given as an argument.  A further
+special function, `__dataset_added__`, is also recognised in case you wish to take action
+whenever a dataset is added to the file list at the top left.
+
+#### Reload
+
+When your script is reloaded, conceptually it is being read line-by-line as if you were typing it
+into the same console that we have been using for interactive work.   This means that
+the console has access to the variables that you defined in your script (as long as they are outside
+the function definitions, of course) including the GUI variables.  As variables from the previous script
+are not deleted (except for the GUI display variables), if you have forgotten to include `__run_script__`
+the old version will be run when the 'Run' button is pressed.
+
+#### Full example: display monitor counts
+
+~~~python
+__script__.title     = 'Plot monitor'
+__script__.version   = '1.0'
+#
+#  Create the GUI
+#
+monitors = {'Pre-mono':'/entry1/monitor/bm1_counts',
+            'Post-mono':'/entry1/monitor/bm2_counts',
+            'Post-sample':'/entry1/monitor/bm3_counts'}
+mon_choice = Par('string','Pre-mono',options=monitors.keys())
+mon_choice.title = 'Location'
+mon_norm = Par('bool','False')
+mon_norm.title = 'Normalise'
+Group('Monitor Plot').add(mon_choice,mon_norm)
+
+def __run_script__(fns):
+    # check input
+    if (fns is None or len(fns) == 0) :  #user forgot to select
+        print 'no input datasets'
+        open_error('No input datasets')  #throw up an error box
+        return                           #and we're done
+
+    df.datasets.clear()                  #Erase previous fiddling
+    clear_plot(Plot1)                    #Remove old plots
+    mon_path = monitors[mon_choice.value]#Get the NeXuS path
+    Plot1.set_x_label('Step')            #Configure the plot
+    Plot1.set_title('Monitor counts')    #configure the plot
+    for fn in fns:                       #Loop over all selected datasets
+        ds = df[fn]                      #Create dataset from filename
+        mon_counts = Dataset(ds[mon_path]) #Extract monitor counts
+        if mon_norm.value is True:       #Are we normalising?
+            real_mon_counts = mon_counts/mon_counts.max() #Normalise
+            y_label = 'Normalised counts'
+        else:                            #No normalisation
+            real_mon_counts = mon_counts
+            y_label = 'Counts'
+        #Create informative legend
+        real_mon_counts.title = ds['/entry1/sample/name'] + ':' + mon_choice.value
+        Plot1.add_dataset(real_mon_counts)
+        Plot1.set_y_label(y_label)       #Set custom y label
+             
+def clear_plot(plotname):
+    all_datasets = copy(plotname.ds)
+    if plotname.ds is None:
+        return
+    for ds in all_datasets:
+        plotname.remove_dataset(ds)
+~~~
+
+Appendix: setting up Gumtree for Python editing
+-----------------------------------------------
+
+You do not have to use Gumtree to edit your scripts - any text editor is acceptable.  If you wish
+to use Gumtree to edit, the following setup steps are necessary.
+
+#. Create a new PyDev project (File -> New -> Other -> PyDev Project)
+#. Click 'Next' and choose a name. The directory for project contents can be anything
+you wish. I tend to find the default choice annoying to navigate to, so would change it. The type of the project is 'Jython'.
+The other options can be left at the defaults.
+#. Click 'Next' and 'Finish'
+#. Ignore the request to configure the Python interpreter, and do not open the Pydev perspective either
+
+Now you can create a Python file within this project:
+
+#. Choose File -> New -> Other -> PyDev Module
+#. Choose a source folder (only choice is the project defined above)
+#. Name the file as you wish, and leave the package and template as is (empty).  Click 'Finish'
+#. The file will appear in an edit window appropriately highlighted.

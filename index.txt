@@ -1,0 +1,35 @@
+Using the Gumtree Scripting Environment
+=======================================
+
+Introductory materials
+----------------------
+
+The following tutorials are based on Gumtree version 1.9.3 and form 
+the basis of a workshop conducted at ANSTO in February 2014.
+
+#. [Arrays and Datasets][mod1]
+#. [Scripting][mod2]
+    
+    Example scripts: 
+    * [demo_script.py]
+    * [monitor_counts.py]
+    * [simple_gui.py]
+#. Scripting for experiments
+#. [Tips and tricks][advanced]
+   
+    Example scripts:
+    * [list_test.py]
+    * [monitor_button.py]
+    * [timing_test.py]
+#. [Using version control][version control]
+
+[mod1]: Array_Dataset.html
+[mod2]: Scripting.html
+[advanced]: Advanced.html
+[version control]: Version_Control.html
+[demo_script.py]: demo_script.py
+[monitor_counts.py]: monitor_counts.py
+[simple_gui.py]: simple_gui.py
+[list_test.py]: list_test.py
+[monitor_button.py]: monitor_button.py
+[timing_test.py]: timing_test.py

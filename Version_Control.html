@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link rel="stylesheet" href="markdown4.css">
+</head>
+<body>
+<h1 id="gumtree-module-4-version-control">Gumtree Module 4: Version Control</h1>
+<h2 id="introduction">Introduction</h2>
+<p>Version control refers to keeping a track of previous or parallel versions of your work. Using version control, you can step back to previous versions, or move sideways to alternative versions. For example, you might have an experimental version of code on the instrument but want the users to stick with the well-tested version. Version control allows you to switch between them in a few seconds.</p>
+<p>A further benefit of version control is that it allows multiple people to work on code without confusion. Modern version control systems (VCSs) use a 'distributed' model, where everybody has a complete copy of the entire history of the code, and the system allows smooth merging and a flow of contributions among all of the authors.</p>
+<p>In the Gumtree context, it is easy to imagine a number of authors: you at the beamline making a quick bugfix; David working on your instrument code in his office; your laptop has another copy where you are playing with a new approach. Version control allows all this work to be recorded and ensures (a) that nothing is lost, and (b) that the various contributions can be assimilated and combined as necessary.</p>
+<h2 id="version-control-terminology">Version control terminology</h2>
+<dl>
+<dt>'Repository'</dt>
+<dd>a folder (directory) with some or all content under version control (including sub-directories)
+</dd>
+<dt>'Commit'</dt>
+<dd>telling the version control system to store a snapshot of the current repository state
+</dd>
+<dt>'Branch'</dt>
+<dd>a line of development. All repositories will have at least one branch, often called 'master'
+</dd>
+<dt>'Merge'</dt>
+<dd>to take changes in one line of development and include them in another. Most often seen in the context of merging fixes into the master repository.
+</dd>
+<dt>'Clone'</dt>
+<dd>Make a copy of a repository
+</dd>
+</dl>
+<h2 id="gumtrees-version-control">Gumtree's version control</h2>
+<p>Gumtree is maintained using the popular 'Git' version control system. Git repositories can be manipulated from within Gumtree (which we cover here), via the command line, or using GUI applications (e.g. <a href="http://code.google.com/p/tortoisegit/">TortoiseGit</a> for Windows). Among many other things, Git is used to maintain the Linux kernel.</p>
+<p>While distributed VCSs don't require a 'central' repository, for administration purposes it can be handy. The <a href="https://github.com/Gumtree">'central' repositories for Gumtree</a> is at the publically-accessible Github website, which can be cloned at will. To clone to your laptop see the instructions in the appendix. Each of the subdirectories in the Github Gumtree directory contains a repository for each instrument.</p>
+<h2 id="appendix-downloading-instrument-scripts">Appendix: Downloading instrument scripts</h2>
+<p>All instrument scripts are kept in <a href="https://github.com/Gumtree">publically-accessible repositories</a>. These repositories can be copied to your local instrument using Gumtree as follows:</p>
+<ol>
+<li><p>Open the 'Git Repository Exploring' perspective by clicking on the drop-down menu behind the little square multi-pane window icon near the top right of your Gumtree window</p></li>
+<li><p>Click on 'Clone a Git Repository'. If you already have a Git repository, this will be an icon at the top of the left-hand pane, otherwise it will be plain text</p></li>
+<li><p>In the Wizard that pops up, choose 'Github' as the repository source. Click 'Next'.</p></li>
+<li><p>Search for &lt;animal&gt;_scripts in the search bar at the top, or else type 'Gumtree/&lt;animal&gt;_scripts' and press return, where &lt;animal&gt; is your instrument animal. If you do not yet have any scripts, feel free to search for scripts from a similar instrument instead. If this step hangs, it is because the proxy required to get outside ANSTO has not been configured and so Gumtree cannot access the internet. One quick way to get around this is to connect wirelessly to the 'eduroam' network using your ANSTO credentials.</p></li>
+<li><p>One of the search results should be 'Gumtree/&lt;animal&gt;_scripts'. Select it and click 'Next'</p></li>
+<li><p>Leave the default list of branches and click 'Next'</p></li>
+<li><p>Choose a directory to hold the repository. This can be anywhere convenient for you and does not have to have any relationship to where you installed Gumtree. Leave everything else at defaults.</p></li>
+<li><p>Click 'Finish'. If you navigate using your favourite file system browsing tool to the directory from the previous step, you will find all of your instrument scripts ready to be loaded.</p></li>
+<li><p>In order to successfully run your scripts, you will have to add the directory that they are in to the <code>sys.path</code> variable: <code>sys.path = ['/path/to/my/directory'] + sys.path</code>. This is because, while you can load the GUI script into the Gumtree GUI successfully, when the script tries to <code>import</code> routines in subdirectories, it will not be able to find them unless the path to them is available.</p></li>
+</ol>
+</body>
+</html>

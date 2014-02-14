@@ -1,0 +1,343 @@
+Gumtree Workshop Module 3: Advanced Tips and Tricks
+===================================================
+
+Introduction
+------------
+
+This module gives some extra tips on speed and traps for the unwary. 
+
+Speed
+-----
+
+Speed is always a concern when programming in a scripting language, as
+scripting languages are essentially interpreting the commands one by one
+each time you execute your script, rather than reading them ahead of time
+and turning them in to machine code like a compiled language would.
+
+### Arrays, not Datasets
+
+Mathematical manipulation of Gumpy Datasets requires calculation of
+variance as well as a series of extra python commands behind the
+scenes.  In contrast, manipulation of the underlying Array (accessed
+in the `storage` attribute of a Dataset object) will call the fast
+Java routines directly, once.
+
+This routine:
+ 
+~~~python
+from time import time
+p = Dataset('/home/jrh/programs/echidna/Echidna-Gumtree-Scripts/Data/ECH0010240.nx.hdf'
+            )
+print 'Read in dataset, shape: ' + `p.shape`
+print 'Adding as dataset...',
+c = time()
+q = p + p
+d = time()
+print 'Required %f seconds' % (d-c)
+#
+print 'Adding as array...',
+c = time()
+ps = p.storage
+q = ps + ps
+d = time()
+print 'Required %f seconds' % (d - c)
+~~~
+
+produces this output:
+
+~~~
+Read in dataset, shape: [50, 1, 128, 128]
+Adding as dataset... Required 1.621000 seconds
+Adding as array... Required 0.065000 seconds
+~~~
+
+a speedup of 2.5 times.
+
+### Never loop more than about 50-100 times
+
+A loop in Python (e.g. `for i in [1,2,3]`) is about 1000 times slower than the
+corresponding loop in C or Java.  For short loops this is not noticeable but for
+thousands of points this will really slow you down.  Using the same dataset as
+above:
+
+~~~python
+from time import time
+p = Dataset('/home/jrh/programs/echidna/Echidna-Gumtree-Scripts/Data/ECH0010240.nx.hdf')
+print 'Read in dataset, shape: ' + `p.shape`
+print 'Summing %d points individually' % (p.shape[-1]*p.shape[-2])
+c = time()
+result = 0
+for point in p.storage[0].flatten():
+    result = result + point
+d = time()
+print 'Result %d, required %f seconds' % (result,(d-c))
+#
+print 'Instead of ',
+c = time()
+result = p.storage[0].flatten().sum()
+d = time()
+print '%d in %f seconds' % (result,(d-c))
+~~~
+
+giving output...
+
+~~~
+Read in dataset, shape: [50, 1, 128, 128]
+Summing 16384 points individually
+Result 337942, required 0.184000 seconds
+Instead of  337942 in 0.008000 seconds
+~~~
+
+### Corollary - avoid index-based access
+
+As a general rule, if you find that you are accessing individual values (e.g. `p[1]`) during a calculation,
+ask yourself if there isn't a way to do this using array-based functions.  The powder diffraction software GSAS-II
+can do least squares refinements using hundreds of parameters to model tens of thousands of points in a few seconds, despite 
+being written in Python, by studiously avoiding any access to individual points inside loops.
+
+### Remember that your data are actually in Gumtree/Java, *not* Gumtree/Jython
+
+Applying any Python functions to your data that create lists
+(e.g. `map`, `filter`) will produce data that are no longer referring
+to data structures inside Gumtree and therefore will need be copied
+back into Gumtree datastructures behind the scenes, point by point, if
+you want to use Gumpy on the data any further:
+
+~~~python
+from time import time
+
+def timeit(start_time):
+    print 'Time since start %f' % (time()-start_time)
+
+p = Dataset('/home/jrh/programs/echidna/Echidna-Gumtree-Scripts/Data/ECH0010240.nx.hdf')
+print 'Read in dataset, shape: ' + `p.shape`
+start_time = time()
+good_points = filter(lambda a:a>0,p.flatten())  
+timeit(start_time)
+gumtree_points = array.asarray(good_points)
+timeit(start_time)
+~~~
+
+gives output on my laptop:
+
+~~~
+Read in dataset, shape: [50, 1, 128, 128]
+Time since start 3.826000
+Time since start 10.019000
+~~~
+
+Saving space
+------------
+
+Every time you do something like `p = q + 1` you create a copy of q. If space is a problem, you
+can instead do `q += 1` and modify the array in place.  There are two very important things to watch
+out for when you do this:
+
+1. If q is an integer array, it will stay an integer array regardless of what you do to it.  Note the following:
+
+~~~
+>> a = array.arange(5)
+>> a
+Array([0, 1, 2, 3, 4])
+>> a += 1.2
+>> a
+Array([1, 2, 3, 4, 5])
+~~~
+
+You will need to create a new floating point array in order for the above to work (`b = a + 1.2` is sufficient).
+
+2. If you modify an array belonging to a raw dataset, that raw dataset appears modified until the file is re-read.
+
+The instrument environment
+--------------------------
+
+### Instrument shortcut file
+
+The python scripts at your instrument have been organised to make it easy to access raw data files. A three-letter
+object is defined, corresponding to your instrument abbreviation (ECH,KOW,WOM etc.).  You can access those raw data files 
+in the current data directory using `ECH[nnnnn]` where `nnnnn` is the file number (no leading zeros
+required).  By changing `ECH.path` you can switch to different directories.
+
+~~~
+>> from ECH import ECH      #load the ECH shortcut
+>> p = ECH[10123]           #load ECH0010123.nx.hdf into p as a dataset
+~~~
+
+### Where are the python scripts installed?
+
+Data reduction files for your instrument are generally installed separately to the Gumtree installation, in the `git/Gumtree`
+directory.
+
+### Shortcuts for NeXuS files
+
+The instrument setup also defines a plain text dictionary file, called `path_table`.  Some of the Echidna file is shown below:
+
+~~~
+######################################################
+# Please do not use key words listed here
+#       axes
+#       err, error
+#       location
+#       name
+#       ndim
+#       size
+#       shape
+#       title
+#       units
+#       var
+#       norm_value
+#       norm_attr
+######################################################
+
+experiment_title = $entry/experiment/title
+user = $entry/user/name
+email = $entry/user/email
+phone = $entry/user/phone
+
+total_counts = $entry/instrument/detector/total_counts
+detector_time = $entry/instrument/detector/time
+# detector_data = $entry/instrument/detector/hmm ??? do we still need that ???
+detector_radius = $entry/instrument/detector/radius
+active_height = $entry/instrument/detector/active_height
+
+# monitor_data = $entry/monitor/data ???? do we still need that ???
+bm1_counts = $entry/monitor/bm1_counts
+...
+~~~
+
+These definitions have two key effects:
+(a). You can refer to `p['total_counts']` instead of `p['/entry1/instrument/detector/total_counts']`
+(b). Everything in this file is carried forward as its short alias when you copy a Dataset, rather than being lost.
+
+No need to set `sys.path` every time
+------------------------------------
+
+The same directory as the Gumtree executable contains a file called 'gumtree.ini'.  By appending the line
+
+~~~
+-Dpython.path=/path/to/my/python/library/files
+~~~
+
+to this file, you will no longer have to add the location of files that you `import` to `sys.path` after startup before running 
+your scripts.
+
+General tricks and traps
+------------------------
+
+@. If you edit a file that is imported by your main GUI file, but you don't want to reload your main GUI file, how do you let 
+the system know?  As the console is the same Python interpreter as the GUI, we should be able to just go `reload(demo_script)`.
+However:
+
+~~~
+>> reload(demo_script)
+Traceback (most recent call last):
+  File "<script>", line 1, in <module>
+NameError: name 'demo_script' is not defined
+~~~
+
+because `demo_script` was imported *inside* a different Python file so is not visible at the
+top level.  If we then `import simple_demo`, we still do not have the updated file, as Python
+will recognise this as the file that it already read in, and simply allow reference to it from
+the top level (i.e. the console).  So we have to import once, and then reload as often as we
+wish.
+
+~~~
+>> import demo_script
+>> reload(demo_script)
+<module 'demo_script' from '/home/jrh/Talks/Gumtree_Workshop/Workshop_scripts/demo_script$py.class'>
+~~~
+
+@. All of Java and Gumtree is available
+
+Jython differs from Python in that everything else that is loaded into the Java Virtual Machine (in our
+case, all of Gumtree) can be accessed from Python.  For a simple taste of some of the things you can do, 
+you can import Java System functions using the `java.lang` package that is always available in JVMs:
+
+~~~
+>> from java.lang import System
+>> System.nanoTime()
+3187917628703477L
+>> System.getProperty('user.country')
+u'AU'
+~~~
+
+@. Initialisation scripts
+
+When starting up the Analysis Scripting environment, Gumpy will run
+the initialisation script defined by the Java property
+`gumtree.scripting.initscript`. Note that this script location is
+searched for relative to the Gumtree workspace, not the Python path.  See Norman
+for further advice on this.
+
+@. Extra plots
+
+You may create additional plots by calling the `Plot` function, for
+example, `plot4 = Plot()`. If you wish the Plots to be reused (rather
+than new ones added), the variable you assign to must be
+global. Otherwise, it will go out of scope, be garbage collected, and
+you will no longer have a way to refer to the plot. A subsequent attempt
+to write to that variable will simply create a new plot.
+
+Once you do have a Plot reference held in a global variable you need
+to make sure that the underlying plot does not disappear, in which
+case the variable will point into empty space and the system
+could/will crash. The Gumtree system avoids plots being closed through
+the GUI by redefining the close method: `plot4.close = noclose`. As an
+alternative you could create buttons in the GUI (see below) that
+dispose plots in a controlled fashion.
+
+And remember: every time you reload your Python script, the script
+contents are re-executed. So if your plot creation commands appear at
+the top level (i.e. not inside a function definition), you will create
+new plots with the same names each time you reload the file. It
+appears that this might be a recipe for system crash, so just in case,
+you can enclose plot creation in a simple check for global variables:
+
+~~~python
+if 'Plot4' not in globals():
+    Plot4 = Plot(title='My persistent plot')
+~~~
+
+@. NeXuS nodes disappear
+
+Datasets that are freshly loaded from the filesystem will have a complete set of NeXuS
+nodes that are accessible using the square bracket syntax.  However, once these dataset objects
+have been copied (either by `p = q` or `p = q.copy()`, these nodes are replaced by a subset 
+with much shorter pathnames.  
+
+Another GUI element
+-------------------
+
+Groups may also contain action buttons, defined using
+`Act(function,label)`. `function` is called when the button is pressed,
+and `label` is the label on the button in the GUI.
+
+~~~python
+plh_copy = Act('plh_copy_proc()', 'Copy plot')
+Group('Copy 1D Datasets to Plot 3').add(plh_copy)
+#
+# Other GUI setup can go here
+#
+# ...
+#
+def plh_copy_proc():
+    # We copy from Plot 1 to Plot 3
+    if type(Plot1.ds) is not list:
+        print 'Plot1 does not contain 1D datasets'
+        return
+    
+    if type(Plot3.ds) is not list:
+        dst_ds_ids = []
+    else:
+        dst_ds_ids = [id(ds) for ds in Plot3.ds]
+    
+    for ds in Plot1.ds:
+        if id(ds) not in dst_ds_ids:
+            Plot3.add_dataset(ds)
+
+~~~
+
+The above code segment has been added to the monitor count GUI from the previous session
+and can be copied [here][monitor_button].
+
+[monitor_button]: monitor_button.py
