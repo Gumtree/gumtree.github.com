@@ -40,14 +40,48 @@ Gumtree's version control
 Gumtree is maintained using the popular 'Git' version control system.  Git repositories can be manipulated 
 from within Gumtree (which we cover here), via the
 command line, or using GUI applications (e.g. [TortoiseGit][tortoise git] for Windows).  Among many
-other things, Git is used to maintain the Linux kernel.
+other things, Git is used to maintain the Linux kernel.  The canonical reference for git is ["Pro Git"][progit].
 
-While distributed VCSs don't require a 'central' repository, for administration purposes it can be handy. The
-['central' repositories for Gumtree][github] is at the publically-accessible Github website, which can be cloned
-at will.  To clone to your laptop see the instructions in the appendix.  Each of the subdirectories in the
-Github Gumtree directory contains a repository for each instrument.
 
-[tortoise git]: http://code.google.com/p/tortoisegit/ 
+While distributed VCSs don't require a 'central' repository, for organisational purposes it can be handy. The
+['central' repositories for Gumtree][github] are at the publically-accessible Github website, which can be cloned
+at will.  Each of the subdirectories in the
+Github Gumtree directory contains a repository for each instrument.  To clone to your laptop using Gumtree 
+see the instructions in the appendix. 
+
+[tortoise git]: http://code.google.com/p/tortoisegit 
+[progit]: http://www.git-scm.com/book
+
+Doing version control in Gumtree
+--------------------------------
+
+### Creating a new branch
+
+A very worthwhile approach when working on code is to create a new branch for every feature that you add or
+issue that you are dealing with.  So let's start by creating a new branch in our repositories: in the Git
+Repository perspective, expand the tree.  Right-click on 'Branches' and follow the menu 'Switch To -> New Branch'.
+Choose a branch name.  The defaults for this are suitable.  Click 'Finish'.  At 'Branches->Local' in the Git
+Repositories tab (Left hand pane) you will see a new branch with your branch name on it. It will be ticked to
+show that the source code in the working directory corresponds to this branch.  Double-clicking on another
+branch name will change the working directory source code to that corresponding to the branch you clicked on. 
+Of course, we haven't changed anything compared to the code that was downloaded, so there will be no obvious effect
+yet.
+
+### Changing code
+
+Change code using whatever editor and filesystem tools you prefer to use.  For this example, I'm simply going to
+move our `monitor_button.py` script to the working directory.  To commit this change, right-click on the top-level of
+the repository browsing tree (i.e. first line at the top of the left-hand pane) and choose 'Commit'.  A dialog box will
+open up giving you an opportunity to describe what you've done, and choose which files of those that have changed you
+wish to include this time around.  After filling in the message and choosing the appropriate files, click 'Commit' and
+you're done.  If you do nothing else, try and commit any changes you make at the beamline, on your own branch if you
+prefer.
+
+### Visualising what has been done
+
+Right click on the top line of the repository browsing pane again and choose 'Show in -> History'.
+
+ 
 
 Appendix: Downloading instrument scripts
 ----------------------------------------
