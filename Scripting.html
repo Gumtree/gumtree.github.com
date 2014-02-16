@@ -42,7 +42,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 
 <span class="kw">def</span> format_time():
     <span class="kw">return</span> datetime.isoformat(datetime.utcnow())</code></pre>
-<p>I have saved this in a random directory. The Python interpreter will not know where to look for this file, so I should add the path to this file to the Python search path, following which I can import the script and execute it:</p>
+<p>I have saved this in a random directory. The Python interpreter will not know where to look for this file, so I should add the path to this file to the Python search path, following which I can import the script and execute it. The Python search path is conveniently available for our inspection and manipulation in the variable <code>sys.path</code>:</p>
 <pre><code>&gt;&gt; sys.path = [&#39;/home/jrh/Talks/Gumtree_Workshop/Workshop_scripts&#39;] + sys.path
 &gt;&gt; sys.path[0]
 &#39;/home/jrh/Talks/Gumtree_Workshop/Workshop_scripts&#39;
@@ -52,7 +52,19 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <h3 id="graphical-user-interface">Graphical User Interface</h3>
 <h4 id="building-the-gui">Building the GUI</h4>
 <p>Building GUIs can be very tedious in many languages, taking hundreds of lines. Gumpy provides some nice Python commands that allow us to build a GUI in just a few lines. The following commands describe a GUI that takes advantage of our time printing routine:</p>
-<pre class="sourceCode python"><code class="sourceCode python">st = Par(<span class="st">&#39;bool&#39;</span>,<span class="st">&#39;False&#39;</span>)      <span class="co">#Create a tick box</span>
+<table class="sourceCode python numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="sourceCode"><pre><code class="sourceCode python">st = Par(<span class="st">&#39;bool&#39;</span>,<span class="st">&#39;False&#39;</span>)      <span class="co">#Create a tick box</span>
 st.title = <span class="st">&#39;Show the time&#39;</span>    <span class="co">#A nice label</span>
 addon = Par(<span class="st">&#39;string&#39;</span>,<span class="st">&#39;Stardate &#39;</span>) <span class="co">#Additional text</span>
 addon.title = <span class="st">&#39;Prepend this:&#39;</span> <span class="co">#Explain to the user</span>
@@ -63,7 +75,7 @@ Group(<span class="st">&#39;Time&#39;</span>).add(st,addon)   <span class="co">#
     <span class="kw">if</span> st.value is <span class="ot">True</span>:      <span class="co">#The user wants to know the time</span>
         <span class="dt">print</span> addon.value + demo_script.format_time()  <span class="co">#Print the time</span>
     <span class="kw">else</span>:                     <span class="co">#The user doesn&#39;t want the time</span>
-        <span class="dt">print</span> <span class="st">&#39;Madness takes control&#39;</span>   <span class="co">#Print something else</span></code></pre>
+        <span class="dt">print</span> <span class="st">&#39;Madness takes control&#39;</span>   <span class="co">#Print something else</span></code></pre></td></tr></table>
 <p>The process of building a Gumtree GUI is essentially to group together a bunch of GUI elements into a 'Group'. The elements are created by calling <code>Par(&lt;type&gt;,&lt;default&gt;,options=&lt;option list&gt;)</code>. Possible types include:</p>
 <dl>
 <dt>'bool'</dt>
@@ -90,7 +102,53 @@ Group(<span class="st">&#39;Time&#39;</span>).add(st,addon)   <span class="co">#
 <h4 id="reload">Reload</h4>
 <p>When your script is reloaded, conceptually it is being read line-by-line as if you were typing it into the same console that we have been using for interactive work. This means that the console has access to the variables that you defined in your script (as long as they are outside the function definitions, of course) including the GUI variables. As variables from the previous script are not deleted (except for the GUI display variables), if you have forgotten to include <code>__run_script__</code> the old version will be run when the 'Run' button is pressed.</p>
 <h4 id="full-example-display-monitor-counts">Full example: display monitor counts</h4>
-<pre class="sourceCode python"><code class="sourceCode python">__script__.title     = <span class="st">&#39;Plot monitor&#39;</span>
+<table class="sourceCode python numberLines"><tr class="sourceCode"><td class="lineNumbers"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+</pre></td><td class="sourceCode"><pre><code class="sourceCode python">__script__.title     = <span class="st">&#39;Plot monitor&#39;</span>
 __script__.version   = <span class="st">&#39;1.0&#39;</span>
 <span class="co">#</span>
 <span class="co">#  Create the GUI</span>
@@ -135,7 +193,7 @@ Group(<span class="st">&#39;Monitor Plot&#39;</span>).add(mon_choice,mon_norm)
     <span class="kw">if</span> plotname.ds is <span class="ot">None</span>:
         <span class="kw">return</span>
     <span class="kw">for</span> ds in all_datasets:
-        plotname.remove_dataset(ds)</code></pre>
+        plotname.remove_dataset(ds)</code></pre></td></tr></table>
 <h2 id="appendix-setting-up-gumtree-for-python-editing">Appendix: setting up Gumtree for Python editing</h2>
 <p>You do not have to use Gumtree to edit your scripts - any text editor is acceptable. If you wish to use Gumtree to edit, the following setup steps are necessary.</p>
 <ol>

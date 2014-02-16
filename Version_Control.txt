@@ -37,11 +37,13 @@ Version control terminology
 Gumtree's version control
 -------------------------
 
-Gumtree is maintained using the popular 'Git' version control system.  Git repositories can be manipulated 
-from within Gumtree (which we cover here), via the
-command line, or using GUI applications (e.g. [TortoiseGit][tortoise git] for Windows).  Among many
-other things, Git is used to maintain the Linux kernel.  The canonical reference for git is ["Pro Git"][progit].
-
+Gumtree is maintained using the popular 'Git' version control system.
+Git repositories can be manipulated from within Gumtree (which we
+cover here), via the command line, or using GUI applications
+(e.g. [TortoiseGit][tortoise git] for Windows).  Among many other
+things, Git is used to maintain the Linux kernel.  ["Pro Git"][progit]
+is an excellent and very readable guide to distributed version control
+and Git.
 
 While distributed VCSs don't require a 'central' repository, for organisational purposes it can be handy. The
 ['central' repositories for Gumtree][github] are at the publically-accessible Github website, which can be cloned
@@ -94,27 +96,31 @@ at some stage.  If we are lucky, the changes in the two branches do
 not overlap and the system will automatically produce files that have
 both sets of changes in them. If we are unlucky, there will be regions
 where the two files have overlapping changes ('Conflicts') and you
-will have to make decisions about what to do.  To merge from one
-branch to another, switch to the branch that you wish to merge into,
-then right-click and choose 'Merge'.  Choose the branch that you want
-the changes to come from, and 'Finish'.
+will have to make decisions about what to do.  A number of fancy text
+editors are available (including within the Gumtree Repository Perspective)
+to ease this task, but we will not cover them here.
+
+To initiate a merge from one branch to another using Gumtree, switch to the
+branch that you wish to merge into, then right-click and choose
+'Merge'.  Choose the branch that you want the changes to come from,
+and 'Finish'.
 
 ### Synchronising work
 
-Distributed VCS means that work is no longer immediately visible to
-everybody with a clone of the repository, but must be explicitly
-'Pushed' to a repository, (or 'Pulled' from a repository depending
-on your point of view).  To make life
-easier, Git has 'tracking branches', which are branches that are not
-supposed to be changed, but exist so that you can bring in work that
-has been done elsewhere without any need to resolve conflicts with
-your local work. After pulling from the remote repository, you can merge
-the remote repository's updates with your local work and then request
-the remote repository to 'Pull' your updated work into the appropriate
+Distributed VCS means that work that you have committed is not
+immediately visible to everybody with a clone of the repository, but
+must be explicitly 'Pushed' to a repository, (or 'Pulled' from a
+repository depending on your point of view).  To make life easier, Git
+has 'tracking branches', which are branches that are not supposed to
+be changed, but exist so that you can bring in work that has been done
+elsewhere without any need to resolve conflicts with your local
+work. After pulling from the remote repository, you can merge the
+remote repository's updates with your local work and then request the
+remote repository to 'Pull' your updated work into the appropriate
 branch.  This will be simpler for the remote repository because your
 updates will be relative to a very recent point in the development of
-that remote repository and less likely to conflict (especially if you've
-done the 'Pull' - 'Merge' - 'Push' process in a few minutes).
+that remote repository and less likely to conflict (especially if
+you've done the 'Pull' - 'Merge' - 'Push' process in a few minutes).
 
 How should we manage our work?
 ------------------------------
@@ -182,9 +188,10 @@ relationship to where you installed Gumtree.  Leave everything else at defaults.
 you will find all of your instrument scripts present.
 
 #. In order to successfully run your scripts, you will have to add the directory that they are in 
-to the `sys.path` variable:
+to the Python interpreter's `sys.path` variable as described [in a previous module]:
 `sys.path = ['/path/to/my/directory'] + sys.path`. This is because, while you can load the GUI script into the Gumtree GUI
 successfully, when the script tries to `import` files in subdirectories, it will not be able to find them unless the
 path to them has been explicitly set inside Python.
 
 [github]: https://github.com/Gumtree
+[in a previous module]: Scripting.html#libraries

@@ -36,7 +36,8 @@ def format_time():
 
 I have saved this in a random directory. The Python interpreter will not know where
 to look for this file, so I should add the path to this file to the Python search
-path, following which I can import the script and execute it:
+path, following which I can import the script and execute it. The Python search
+path is conveniently available for our inspection and manipulation in the variable `sys.path`:
 
 ~~~
 >> sys.path = ['/home/jrh/Talks/Gumtree_Workshop/Workshop_scripts'] + sys.path
@@ -55,7 +56,7 @@ Building GUIs can be very tedious in many languages, taking hundreds of lines. G
 allow us to build a GUI in just a few lines.  The following commands describe a GUI that takes advantage 
 of our time printing routine:
 
-~~~python
+~~~{.python .numberLines}
 st = Par('bool','False')      #Create a tick box
 st.title = 'Show the time'    #A nice label
 addon = Par('string','Stardate ') #Additional text
@@ -113,7 +114,7 @@ the old version will be run when the 'Run' button is pressed.
 
 #### Full example: display monitor counts
 
-~~~python
+~~~{.python .numberLines}
 __script__.title     = 'Plot monitor'
 __script__.version   = '1.0'
 #
