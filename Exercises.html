@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link rel="stylesheet" href="markdown4.css">
+</head>
+<body>
+<h1 id="exercises-for-modules-1-5">Exercises for Modules 1-5</h1>
+<h2 id="module-1-arrays-and-datasets">Module 1: Arrays and Datasets</h2>
+<p>(Arrays)</p>
+<ol type="1">
+<li><p>Create a 10x10 element array with elements in sequence from 0 to 99. Find the element in the 3rd row, 4th column.</p></li>
+<li><p>Create a 10x10 element array with random elements with values between 0 and 100. Assume these numbers represent Poisson-distributed counts, so var(N) = N. Set every value N for which N &lt; 3σ to 0.</p></li>
+</ol>
+<p>(Datasets)</p>
+<ol start="3" type="1">
+<li><p>Plot the result of exercise 2.</p></li>
+<li><p>Read in a 3-dimensional dataset from your instrument</p></li>
+<li><p>Calculate the average intensity of the second frame</p></li>
+<li><p>Calculate the percentage of pixels greater than the average intensity</p></li>
+<li><p>Set every value in the second frame that is smaller than the average to zero and plot the result</p></li>
+<li><p>Subtract the first frame from the second frame (alternatively, if you have a background dataset, subtract that)</p></li>
+<li><p>Plot the estimated uncertainty of the result of the previous exercise.</p></li>
+</ol>
+<h2 id="module-2-scripting">Module 2: Scripting</h2>
+<p>Exercises (choose as many as you like):</p>
+<ol type="1">
+<li>Adjust the <a href="monitor_counts.py">example monitor count script</a> to include an option 'All' which will display all monitor counts and automatically normalise them if this 'All' option is chosen.</li>
+</ol>
+<ol start="2" type="1">
+<li><p>Write a GUI script to display the first frame of the selected file</p></li>
+<li><p>Write a GUI script that sums every frame of the selected file along one direction and then plots the result</p></li>
+<li><p>Write a GUI script that plots user-selectable items from the datafile (e.g. monitor counts, scan positions, temperature)</p></li>
+<li><p>Write a GUI script to plot the percentage of points greater than average in each frame of the selected file</p></li>
+</ol>
+<h2 id="module-4-tips-and-tricks">Module 4: Tips and Tricks</h2>
+<h2 id="module-5-version-control">Module 5: Version Control</h2>
+<ol type="1">
+<li><p>Create a new Gumtree branch in your previously cloned repository and add your new GUI from earlier to it</p></li>
+<li><p>Commit your work</p></li>
+<li><p>Switch back to the original branch and verify that your new file has gone</p></li>
+<li><p>Switch back to your new branch and add an extra element to your GUI (e.g. an extra item in a selection box)</p></li>
+<li><p>Run your GUI to test, then commit your work</p></li>
+<li><p>Merge your work into the 'master' branch.</p></li>
+</ol>
+</body>
+</html>

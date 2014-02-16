@@ -22,6 +22,7 @@ the basis of a workshop conducted at ANSTO in February 2014.
     * [monitor_button.py]
     * [timing_test.py]
 #. [Using version control][version control]
+#. [Exercises][exercises]
 
 [mod1]: Array_Dataset.html
 [mod2]: Scripting.html
@@ -33,3 +34,4 @@ the basis of a workshop conducted at ANSTO in February 2014.
 [list_test.py]: list_test.py
 [monitor_button.py]: monitor_button.py
 [timing_test.py]: timing_test.py
+[exercises]: Exercises.html

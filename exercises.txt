@@ -1,0 +1,67 @@
+Exercises for Modules 1-5
+=========================
+
+Module 1: Arrays and Datasets
+-----------------------------
+
+(Arrays)
+
+1. Create a 10x10 element array with elements in sequence from
+0 to 99. Find the element in the 3rd row, 4th column.
+
+2. Create a 10x10 element array with random elements with values
+between 0 and 100.  Assume these numbers represent Poisson-distributed
+counts, so var(N) = N. Set every value N for which N < 3σ to 0.
+
+(Datasets)
+
+3. Plot the result of exercise 2. 
+
+4. Read in a 3-dimensional dataset from your instrument
+
+5. Calculate the average intensity of the second frame
+
+6. Calculate the percentage of pixels greater than the average intensity
+
+7. Set every value in the second frame that is smaller than the average to zero and plot the result
+
+8. Subtract the first frame from the second frame (alternatively, if you have a background dataset, subtract that)
+
+9. Plot the estimated uncertainty of the result of the previous exercise.
+
+Module 2: Scripting
+-------------------
+
+Exercises (choose as many as you like):
+
+1. Adjust the [example monitor count script][moncounts] to include an option 'All'
+which will display all monitor counts and automatically normalise them
+if this 'All' option is chosen.
+
+[moncounts]: monitor_counts.py
+
+2. Write a GUI script to display the first frame of the selected file
+
+3. Write a GUI script that sums every frame of the selected file along one direction and then plots the result
+
+4. Write a GUI script that plots user-selectable items from the datafile (e.g. monitor counts, scan positions, temperature)
+
+5. Write a GUI script to plot the percentage of points greater than average in each frame of the selected file
+
+Module 4: Tips and Tricks
+-------------------------
+
+Module 5: Version Control
+-------------------------
+
+1. Create a new Gumtree branch in your previously cloned repository and add your new GUI from earlier to it
+
+2. Commit your work
+
+3. Switch back to the original branch and verify that your new file has gone
+
+4. Switch back to your new branch and add an extra element to your GUI (e.g. an extra item in a selection box)
+
+5. Run your GUI to test, then commit your work
+
+6. Merge your work into the 'master' branch.

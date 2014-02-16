@@ -58,7 +58,8 @@ Doing version control in Gumtree
 ### Creating a new branch
 
 A very worthwhile approach when working on code is to create a new branch for every feature that you add or
-issue that you are dealing with.  So let's start by creating a new branch in our repositories: in the Git
+issue that you are dealing with, so that if another conflicting issue arises you can switch between branches
+rather than try to work on both in the same place.  So let's start by creating a new branch in our repositories: in the Git
 Repository perspective, expand the tree.  Right-click on 'Branches' and follow the menu 'Switch To -> New Branch'.
 Choose a branch name.  The defaults for this are suitable.  Click 'Finish'.  At 'Branches->Local' in the Git
 Repositories tab (Left hand pane) you will see a new branch with your branch name on it. It will be ticked to
@@ -77,11 +78,78 @@ wish to include this time around.  After filling in the message and choosing the
 you're done.  If you do nothing else, try and commit any changes you make at the beamline, on your own branch if you
 prefer.
 
-### Visualising what has been done
+### Time travel
 
-Right click on the top line of the repository browsing pane again and choose 'Show in -> History'.
+Right click on the top line of the repository browsing pane again and choose 'Show in -> History'.  At the bottom right
+a history pane will open up showing the progress of development on this project, as far as this particular repository
+knows.  Each line is a Commit, with a unique label and the commit message.  By right-clicking on a commit, it is possible
+to switch the working directory to its state immediately after that commit.  Some other options including starting a 
+branch from the chosen commit and examining the changes made by that commit.
 
- 
+### Merging
+
+Conceptually, when we merge we are applying all the changes made in
+one branch back to another branch from which the first branch diverged
+at some stage.  If we are lucky, the changes in the two branches do
+not overlap and the system will automatically produce files that have
+both sets of changes in them. If we are unlucky, there will be regions
+where the two files have overlapping changes ('Conflicts') and you
+will have to make decisions about what to do.  To merge from one
+branch to another, switch to the branch that you wish to merge into,
+then right-click and choose 'Merge'.  Choose the branch that you want
+the changes to come from, and 'Finish'.
+
+### Synchronising work
+
+Distributed VCS means that work is no longer immediately visible to
+everybody with a clone of the repository, but must be explicitly
+'Pushed' to a repository, (or 'Pulled' from a repository depending
+on your point of view).  To make life
+easier, Git has 'tracking branches', which are branches that are not
+supposed to be changed, but exist so that you can bring in work that
+has been done elsewhere without any need to resolve conflicts with
+your local work. After pulling from the remote repository, you can merge
+the remote repository's updates with your local work and then request
+the remote repository to 'Pull' your updated work into the appropriate
+branch.  This will be simpler for the remote repository because your
+updates will be relative to a very recent point in the development of
+that remote repository and less likely to conflict (especially if you've
+done the 'Pull' - 'Merge' - 'Push' process in a few minutes).
+
+How should we manage our work?
+------------------------------
+
+Git does not prescribe any particular way of working. Given a situation
+where instrument scientists are making occasional bug-fixes and enhancements
+to the distributed Python code, and the computing team are making constant
+developments and improvements in parallel, how should this be managed so that
+both sets of work are available in a timely manner?  Here are two
+options:
+
+A: 
+      Instrument scientist commits changes to a local 'master' branch that is supposed to
+track the Github 'master' branch.  Pros - very simple ( a single commit) and if the
+master branch is always in the working directory it is easy to track computer team
+updates.  Cons - the
+'master' branch on the instrument cannot be merged into the 'master' branch on
+Github unless the instrument version is first updated, with resolution of all conflicts,
+before being sent to Github. This involves potentially complex operations on 
+unfamiliar code.
+
+B:
+      Instrument scientist commits changes to a 'beamline' branch that is tracked by
+Github (i.e. nobody else changes it).  Pros - pushing to Github always succeeds so the
+work is visible; computer team can incorporate the work as availability on Github is
+a signal that the work is ready. Cons - beamline can only access computer team work
+by updating the 'master' branch, which means that bug-fixes etc. on the beamline
+branch are lost unless the beamline then merges the master branch changes into the
+beamline branch.  Under this model the computer team should
+update the master branch on Github with the contents of the beamline branch on Github
+as soon as possible after changes have been pushed to the beamline branch from the
+instrument.
+
+Discuss.
+
 
 Appendix: Downloading instrument scripts
 ----------------------------------------
@@ -111,12 +179,12 @@ network using your ANSTO credentials.
 relationship to where you installed Gumtree.  Leave everything else at defaults.
 
 #. Click 'Finish'.  If you navigate using your favourite file system browsing tool to the directory from the previous step,
-you will find all of your instrument scripts ready to be loaded.
+you will find all of your instrument scripts present.
 
 #. In order to successfully run your scripts, you will have to add the directory that they are in 
 to the `sys.path` variable:
 `sys.path = ['/path/to/my/directory'] + sys.path`. This is because, while you can load the GUI script into the Gumtree GUI
-successfully, when the script tries to `import` routines in subdirectories, it will not be able to find them unless the
-path to them is available. 
+successfully, when the script tries to `import` files in subdirectories, it will not be able to find them unless the
+path to them has been explicitly set inside Python.
 
 [github]: https://github.com/Gumtree
