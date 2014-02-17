@@ -62,7 +62,7 @@ as dataset routines (see later), we must prefix them with 'array' to disambiguat
     Array([1, 2, 3, 4])
 ~~~
 
-3. As all zeros or ones:
+3. As all `zeros` or `ones`, or `fill`ed with an arbitrary value:
 
 ~~~
 >> array.ones([3,2])
@@ -99,6 +99,13 @@ An array object has a number of attributes that provide information:
 <type 'float'>
 >> p.shape
 [3, 2]
+
+>> b = array.instance([2,3],dtype=int)
+>> b.fill(100)
+>> b
+Array([[100, 100, 100],
+       [100, 100, 100]])
+
 ~~~
 
 ### Manipulating arrays
@@ -108,9 +115,9 @@ numbered from the outside in in a nested list representation; it may help to
 read a shape such as `[6,3,2]` as "6 lists of 3 lists of 2 elements".  NeXuS
 file dimensions are `[frame,TOF,vertical,horizontal]`.
 
-#. Slicing and indexing: `[start:finish:step,<next dimension>,...]`
+1. Slicing and indexing: `[start:finish:step,<next dimension>,...]`
 
-`finish` and `step` can be omitted, in which case they default to the
+    `finish` and `step` can be omitted, in which case they default to the
 end of the array and 1, respectively.
 
 ~~~
@@ -133,7 +140,7 @@ Array([[ 3],
        [11]])
 ~~~
 
-#. Setting values: as above, with equals:
+2. Setting values: as above, with equals:
 
 ~~~
 >> c[1:6:2,1] = 101
@@ -146,7 +153,18 @@ Array([[  0,   1],
        [ 10, 101]])
 ~~~
 
-#. Unary mathematical functions: sin, cos, tan, arcsin, arccos, arctan, sqrt, 
+3. Joining arrays together: `concatenate`,`append`
+
+~~~
+>> a = Array([1,2,3])
+>> b = Array([4,5,6])
+>> array.concatenate([a,b])
+Array([1, 2, 3, 4, 5, 6])
+>> array.append(a,b)
+Array([1, 2, 3, 4, 5, 6])
+~~~
+
+4. Unary mathematical functions: sin, cos, tan, arcsin, arccos, arctan, sqrt, 
 exp,ln, log10...
 
 ~~~
@@ -159,7 +177,7 @@ Array([[0.000000, 1.000000],
        [3.162278, 3.316625]])
 ~~~
 
-#. Binary mathematical functions: +, - , * , /
+5. Binary mathematical functions: +, - , * , /
 
 ~~~
 >> c=array.arange(12,[6,2])
@@ -180,7 +198,7 @@ Array([[ 2,  3,  4,  5],
        [10, 11, 12, 13]])
 ~~~
 
-#. Masking: use of comparison, e.g. < , >=, == etc.
+6. Masking: use of comparison, e.g. < , >=, == etc.
 
 ~~~
 >> p = array.arange(12)
@@ -194,7 +212,8 @@ Array([False, False, False, False, False, False, True, True, True, True, True, T
 Array([0.004117, 0.298131, 0.256593, 0.800404, 0.245852, 0.606921, -0.500000, -0.500000, -0.500000, -0.500000, -0.500000, -0.500000])
 ~~~
 
-#. Reshaping: `transpose`,`reshape`,`get_reduced`
+7. Reshaping: `transpose`,`reshape`,`get_reduced`. `get_reduced` removes axes of
+dimension one.
 
 ~~~
 >> a = array.arange(12,[3,4])
@@ -277,7 +296,8 @@ Datasets can be created from Arrays, lists and NeXuS files:
 
 Additional attributes (i.e. found using `.`) include: `axes` (a list of axes), `storage` 
 (the array holding the data) and `var` (the variance array).  Datasets originating from
-files have the `location` attribute as well.
+files have the `location` attribute as well.  You can obtain a list of available metadata
+using the standard Python `dir` command.
 
 ~~~
 >> p.location
@@ -298,6 +318,27 @@ SimpleData(Array([[0.000000, 1.000000, 2.000000, 3.000000],
                   [8.000000, 9.000000, 10.000000, 11.000000]]), 
            title='variance',
            units='')
+>> dir(d)
+['axes', 'copy_from', 'dtype', 'err', 'error', 'exp', 'fill', 'flatten', 'float_copy', 'get_reduced', 
+'get_section', 'get_slice', 'item_iter', 'ln', 'location', 'log10', 'max', 'metadata', 'min', 'name', 
+'ndim', 'positive_float_copy', 'put', 'reshape', 'section_iter', 'set_value', 'shape', 'size', 'sqrt', 
+'storage', 'sum', 'take', 'title', 'title', 'tolist', 'units', 'view_1d']
+~~~
+
+### Saving datasets
+
+Datasets can be saved: 
+
+~~~
+>> b = Dataset([1,2,3])
+>> b.save_copy("/home/jrh/temp/bcopy")
+>> Dataset("/home/jrh/temp/bcopy")
+Dataset(Array([1, 2, 3]), 
+        title='bcopy',
+        var=Array([1.000000, 2.000000, 3.000000]),
+        axes=[SimpleData(Array([0.000000, 1.000000, 2.000000]), 
+                         title='dim_0',
+                         units='')])
 ~~~
 
 ### Plotting datasets

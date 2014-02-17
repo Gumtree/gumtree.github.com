@@ -169,12 +169,10 @@ Appendix: setting up Gumtree for Python editing
 You do not have to use Gumtree to edit your scripts - any text editor is acceptable.  If you wish
 to use Gumtree to edit, the following setup steps are necessary.
 
-#. Create a new PyDev project (File -> New -> Other -> PyDev Project)
+#. Create a new project (File -> New -> General project)
 #. Click 'Next' and choose a name. The directory for project contents can be anything
-you wish. I tend to find the default choice annoying to navigate to, so would change it. The type of the project is 'Jython'.
-The other options can be left at the defaults.
+you wish. I tend to find the default choice annoying to navigate to, so would change it.
 #. Click 'Next' and 'Finish'
-#. Ignore the request to configure the Python interpreter, and do not open the Pydev perspective either
 
 Now you can create a Python file within this project:
 

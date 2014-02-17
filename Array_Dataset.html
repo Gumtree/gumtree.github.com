@@ -37,7 +37,7 @@
 <pre><code>    &gt;&gt; array.Array([1,2,3,4])
     Array([1, 2, 3, 4])</code></pre>
 <ol start="3" type="1">
-<li>As all zeros or ones:</li>
+<li>As all <code>zeros</code> or <code>ones</code>, or <code>fill</code>ed with an arbitrary value:</li>
 </ol>
 <pre><code>&gt;&gt; array.ones([3,2])
 Array([[1.000000, 1.000000],
@@ -64,13 +64,20 @@ Array([[1, 1],
 &gt;&gt; p.dtype
 &lt;type &#39;float&#39;&gt;
 &gt;&gt; p.shape
-[3, 2]</code></pre>
+[3, 2]
+
+&gt;&gt; b = array.instance([2,3],dtype=int)
+&gt;&gt; b.fill(100)
+&gt;&gt; b
+Array([[100, 100, 100],
+       [100, 100, 100]])
+</code></pre>
 <h3 id="manipulating-arrays">Manipulating arrays</h3>
 <p>The first element in an array is always numbered zero. The dimensions are numbered from the outside in in a nested list representation; it may help to read a shape such as <code>[6,3,2]</code> as &quot;6 lists of 3 lists of 2 elements&quot;. NeXuS file dimensions are <code>[frame,TOF,vertical,horizontal]</code>.</p>
-<ol>
-<li>Slicing and indexing: <code>[start:finish:step,&lt;next dimension&gt;,...]</code></li>
+<ol type="1">
+<li><p>Slicing and indexing: <code>[start:finish:step,&lt;next dimension&gt;,...]</code></p>
+<p><code>finish</code> and <code>step</code> can be omitted, in which case they default to the end of the array and 1, respectively.</p></li>
 </ol>
-<p><code>finish</code> and <code>step</code> can be omitted, in which case they default to the end of the array and 1, respectively.</p>
 <pre><code>&gt;&gt; c=array.arange(12,[6,2])
 &gt;&gt; c
 Array([[ 0,  1],
@@ -88,7 +95,7 @@ Array([[ 2,  3],
 Array([[ 3],
        [ 7],
        [11]])</code></pre>
-<ol>
+<ol start="2" type="1">
 <li>Setting values: as above, with equals:</li>
 </ol>
 <pre><code>&gt;&gt; c[1:6:2,1] = 101
@@ -99,7 +106,16 @@ Array([[  0,   1],
        [  6, 101],
        [  8,   9],
        [ 10, 101]])</code></pre>
-<ol>
+<ol start="3" type="1">
+<li>Joining arrays together: <code>concatenate</code>,<code>append</code></li>
+</ol>
+<pre><code>&gt;&gt; a = Array([1,2,3])
+&gt;&gt; b = Array([4,5,6])
+&gt;&gt; array.concatenate([a,b])
+Array([1, 2, 3, 4, 5, 6])
+&gt;&gt; array.append(a,b)
+Array([1, 2, 3, 4, 5, 6])</code></pre>
+<ol start="4" type="1">
 <li>Unary mathematical functions: sin, cos, tan, arcsin, arccos, arctan, sqrt, exp,ln, log10...</li>
 </ol>
 <pre><code>&gt;&gt; c.sqrt()
@@ -109,7 +125,7 @@ Array([[0.000000, 1.000000],
        [2.449490, 2.645751],
        [2.828427, 3.000000],
        [3.162278, 3.316625]])</code></pre>
-<ol>
+<ol start="5" type="1">
 <li>Binary mathematical functions: +, - , * , /</li>
 </ol>
 <pre><code>&gt;&gt; c=array.arange(12,[6,2])
@@ -128,7 +144,7 @@ Array([[1.000000, 2.000000],
 Array([[ 2,  3,  4,  5],
        [ 6,  7,  8,  9],
        [10, 11, 12, 13]])</code></pre>
-<ol>
+<ol start="6" type="1">
 <li>Masking: use of comparison, e.g. &lt; , &gt;=, == etc.</li>
 </ol>
 <pre><code>&gt;&gt; p = array.arange(12)
@@ -140,8 +156,8 @@ Array([False, False, False, False, False, False, True, True, True, True, True, T
 &gt;&gt; q[p&gt;5] = -0.5
 &gt;&gt; q
 Array([0.004117, 0.298131, 0.256593, 0.800404, 0.245852, 0.606921, -0.500000, -0.500000, -0.500000, -0.500000, -0.500000, -0.500000])</code></pre>
-<ol>
-<li>Reshaping: <code>transpose</code>,<code>reshape</code>,<code>get_reduced</code></li>
+<ol start="7" type="1">
+<li>Reshaping: <code>transpose</code>,<code>reshape</code>,<code>get_reduced</code>. <code>get_reduced</code> removes axes of dimension one.</li>
 </ol>
 <pre><code>&gt;&gt; a = array.arange(12,[3,4])
 &gt;&gt; a
@@ -198,7 +214,7 @@ axes:
 &#39;Ni404-cubane&#39;
 &gt;&gt; p[&#39;/entry1/experiment/title&#39;]
 &#39;P2708&#39;</code></pre>
-<p>Additional attributes (i.e. found using <code>.</code>) include: <code>axes</code> (a list of axes), <code>storage</code> (the array holding the data) and <code>var</code> (the variance array). Datasets originating from files have the <code>location</code> attribute as well.</p>
+<p>Additional attributes (i.e. found using <code>.</code>) include: <code>axes</code> (a list of axes), <code>storage</code> (the array holding the data) and <code>var</code> (the variance array). Datasets originating from files have the <code>location</code> attribute as well. You can obtain a list of available metadata using the standard Python <code>dir</code> command.</p>
 <pre><code>&gt;&gt; p.location
 u&#39;/home/jrh/programs/echidna/Echidna-Gumtree-Scripts/Data/ECH0010123.nx.hdf&#39;
 &gt;&gt; d.axes[0]
@@ -216,7 +232,23 @@ SimpleData(Array([[0.000000, 1.000000, 2.000000, 3.000000],
                   [4.000000, 5.000000, 6.000000, 7.000000],
                   [8.000000, 9.000000, 10.000000, 11.000000]]), 
            title=&#39;variance&#39;,
-           units=&#39;&#39;)</code></pre>
+           units=&#39;&#39;)
+&gt;&gt; dir(d)
+[&#39;axes&#39;, &#39;copy_from&#39;, &#39;dtype&#39;, &#39;err&#39;, &#39;error&#39;, &#39;exp&#39;, &#39;fill&#39;, &#39;flatten&#39;, &#39;float_copy&#39;, &#39;get_reduced&#39;, 
+&#39;get_section&#39;, &#39;get_slice&#39;, &#39;item_iter&#39;, &#39;ln&#39;, &#39;location&#39;, &#39;log10&#39;, &#39;max&#39;, &#39;metadata&#39;, &#39;min&#39;, &#39;name&#39;, 
+&#39;ndim&#39;, &#39;positive_float_copy&#39;, &#39;put&#39;, &#39;reshape&#39;, &#39;section_iter&#39;, &#39;set_value&#39;, &#39;shape&#39;, &#39;size&#39;, &#39;sqrt&#39;, 
+&#39;storage&#39;, &#39;sum&#39;, &#39;take&#39;, &#39;title&#39;, &#39;title&#39;, &#39;tolist&#39;, &#39;units&#39;, &#39;view_1d&#39;]</code></pre>
+<h3 id="saving-datasets">Saving datasets</h3>
+<p>Datasets can be saved:</p>
+<pre><code>&gt;&gt; b = Dataset([1,2,3])
+&gt;&gt; b.save_copy(&quot;/home/jrh/temp/bcopy&quot;)
+&gt;&gt; Dataset(&quot;/home/jrh/temp/bcopy&quot;)
+Dataset(Array([1, 2, 3]), 
+        title=&#39;bcopy&#39;,
+        var=Array([1.000000, 2.000000, 3.000000]),
+        axes=[SimpleData(Array([0.000000, 1.000000, 2.000000]), 
+                         title=&#39;dim_0&#39;,
+                         units=&#39;&#39;)])</code></pre>
 <h3 id="plotting-datasets">Plotting datasets</h3>
 <p>Your Gumtree interface has 3 pre-defined plotting areas known as <code>Plot1</code>, <code>Plot2</code> and <code>Plot3</code>. To plot a dataset, simply call the <code>set_dataset</code> method of these objects:</p>
 <pre><code>&gt;&gt; Plot1.set_dataset(p[0][0])
