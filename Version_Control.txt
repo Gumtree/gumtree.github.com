@@ -157,7 +157,7 @@ instrument.
 Discuss.
 
 
-Appendix: Downloading instrument scripts
+Appendix: Downloading instrument scripts{#appendix}
 ----------------------------------------
 
 All instrument scripts are kept in [publically-accessible repositories][github].  These repositories can be
