@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+  <link rel="stylesheet" href="markdown4.css">
+</head>
+<body>
+<H1><A NAME="gumtree-workshop-module-3-advanced-tips-and-tricks"></A>Gumtree
+Workshop Module 3: Scripting for experiments</H1>
+<H2 CLASS="western">Why use Python</H2>
+<P>Python in Gumtree provides you access to instrument status and
+experiment data, which can be used as feedback to control the
+experiment. It will be also convenient for users to have some GUI
+support on running the experiment.</P>
+<H2 CLASS="western">Drawback</H2>
+<P>Python is running at client side now. Which means it is less
+reliable than the server side program like SICS. However our plan is
+to run python in server side to control the experiment.</P>
+<H2 CLASS="western">Send command to SICS</H2>
+<P>We have Python functions that wrap up SICS commands. For example,
+drive(), run(), runscan(), histmem(), setpos()</P>
+<PRE CLASS="western"><CODE CLASS="western">sics.drive('sample_x', 33)</CODE></PRE><P>
+Functions that is not SICS like: getValue(),  count(), getFilename(),
+multiDrive(), interrupt(), execute(), runCommand()</P>
+<PRE CLASS="western"><CODE CLASS="western">sics.getValue('sample_x')</CODE></PRE><H2 CLASS="western">
+Load data file in Python</H2>
+<P>Python can listen to SICS event. When a data file gets created or
+modified, we can write a function to load it and plot it.</P>
+<PRE CLASS="western"><CODE CLASS="western">def __load_experiment_data__():</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">basename = sics.getFilename()</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">fullname = str(System.getProperty('sics.data.path') + '/' + basename)</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">df.datasets.clear()</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">ds = df[fullname]</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">bm2 = ds[str(data_name.value)]</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">qm = ds[str(axis_name.value)]</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">if bm2.size &gt; qm.size:</CODE>
+<CODE CLASS="western">        </CODE><CODE CLASS="western">bm2 = bm2[:qm.size]</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">ds2 = Dataset(bm2, axes=[qm])</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">ds2.title = ds.id</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">ds2.location = fullname</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">Plot1.set_dataset(ds2)</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">Plot1.x_label = axis_name.value</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">Plot1.y_label = str(data_name.value)</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">Plot1.title = str(data_name.value) + ' vs ' + axis_name.value</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">Plot1.pv.getPlot().setMarkerEnabled(True)</CODE></PRE><H2 CLASS="western">
+GUI support</H2>
+<P>A convenient graphical user interface is important for
+inexperienced users. Gumtree provides a drop down list to easily
+access scripts created by both developers and users themselves. Below
+is an example of how to access scripts mostly often used and recently
+used. 
+</P>
+<P><IMG SRC="images/Experiments_html_72a2a205.gif" NAME="graphics1" ALIGN=LEFT WIDTH=390 HEIGHT=293 BORDER=0><BR CLEAR=LEFT><BR><BR>
+</P>
+<P>Below is the code to create the control area for running the
+script. 
+</P>
+<PRE CLASS="western"><CODE CLASS="western">G1 = Group('Align S2 at 0')</CODE>
+<CODE CLASS="western">s2 = Par('float', 0)</CODE>
+<CODE CLASS="western">scan = Par('string', str(math.ceil((s2.value + 2) * 1000) / 1000) + ', -0.2, 21, \'timer\', 1')</CODE>
+<CODE CLASS="western">act1 = Act('find_s2()', 'Find s2 Zero')</CODE>
+<CODE CLASS="western">G1.add(s2, scan, act1)</CODE>
+
+<CODE CLASS="western">G2 = Group('Fitting')</CODE>
+<CODE CLASS="western">data_name = Par('string', 'bm2_counts', \</CODE>
+<CODE CLASS="western">               </CODE><CODE CLASS="western">options = ['bm1_counts', 'bm2_counts'])</CODE>
+<CODE CLASS="western">axis_name = Par('string', 's2')</CODE>
+<CODE CLASS="western">peak_pos = Par('float', 'NaN')</CODE>
+<CODE CLASS="western">offset_done = Par('bool', False)</CODE>
+<CODE CLASS="western">act3 = Act('offset_s2()', 'Set s2 Zero Offset')</CODE>
+<CODE CLASS="western">G2.add(data_name, axis_name, peak_pos, offset_done, act3)</CODE>
+
+nact = Act('next_step()', 'Next Step -&gt;')</PRE><P>
+Above code gives you these control widgets:</P>
+<P><IMG SRC="images/Experiments_html_m6a023f72.gif" NAME="graphics2" ALIGN=LEFT WIDTH=338 HEIGHT=291 BORDER=0><BR CLEAR=LEFT>.</P>
+<H2 CLASS="western">Alignment script 
+</H2>
+<P>Below is an example of a generic alignement script to align
+devices.</P>
+<PRE CLASS="western"><CODE CLASS="western"># Script control setup area</CODE>
+<CODE CLASS="western"># script info</CODE>
+<CODE CLASS="western">__script__.title = 'Scan Device'</CODE>
+<CODE CLASS="western">__script__.version = '0.1'</CODE>
+
+<CODE CLASS="western">G1 = Group('Scan on device')</CODE>
+<CODE CLASS="western">device_name = Par('string', 'dummy_motor', options = ['dummy_motor'], command = 'update_axis_name()')</CODE>
+<CODE CLASS="western">scan_start = Par('float', 0)</CODE>
+<CODE CLASS="western">scan_stop = Par('float', 0)</CODE>
+<CODE CLASS="western">number_of_points = Par('int', 0)</CODE>
+<CODE CLASS="western">scan_mode = Par('string', 'time', options = ['time', 'count'])</CODE>
+<CODE CLASS="western">scan_mode.enabled = True</CODE>
+<CODE CLASS="western">scan_preset = Par('int', 0)</CODE>
+<CODE CLASS="western">act1 = Act('scan_device()', 'Scan on Device')</CODE>
+<CODE CLASS="western">def scan_device():</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">aname = str(device_name.value)</CODE>
+<CODE CLASS="western">#    axis_name.value = aname</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">np = int(number_of_points.value)</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">if np &lt;= 0:</CODE>
+<CODE CLASS="western">        </CODE><CODE CLASS="western">return</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">step_size = float(scan_stop.value - scan_start.value) / np</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">slog('runscan ' + str(device_name.value) + ' ' + str(scan_start.value) + ' ' + str(scan_stop.value) \</CODE>
+<CODE CLASS="western">                    </CODE><CODE CLASS="western">+ ' ' + str(number_of_points.value) + ' ' + str(scan_mode.value) + ' ' + str(scan_preset.value))</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">for p in xrange(np):</CODE>
+<CODE CLASS="western">        </CODE><CODE CLASS="western">slog('drive ' + aname + ' ' + str(scan_start.value + step_size * p))</CODE>
+<CODE CLASS="western">        </CODE><CODE CLASS="western">sics.drive(str(aname), scan_start.value + step_size * p)</CODE>
+<CODE CLASS="western">        </CODE><CODE CLASS="western">sicsext.runscan('dummy_motor', 0, 0, 1, </CODE>
+<CODE CLASS="western">                    </CODE><CODE CLASS="western">scan_mode.value, scan_preset.value, None, True, \</CODE>
+<CODE CLASS="western">                    </CODE><CODE CLASS="western">'HISTOGRAM_XY')</CODE>
+<CODE CLASS="western">        </CODE><CODE CLASS="western">slog('finished NP ' + str(p))</CODE>
+<CODE CLASS="western">        </CODE><CODE CLASS="western">time.sleep(1)</CODE>
+<CODE CLASS="western">    </CODE>
+<CODE CLASS="western">devices = sicsext.getDrivables()</CODE>
+<CODE CLASS="western">device_name.options = devices</CODE>
+<CODE CLASS="western">def update_axis_name():</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">axis_name.value = device_name.value</CODE>
+<CODE CLASS="western">        </CODE>
+<CODE CLASS="western">G1.add(device_name, scan_start, scan_stop, number_of_points, scan_mode, scan_preset, act1)</CODE>
+
+
+<CODE CLASS="western"># Use below example to create a new Plot</CODE>
+<CODE CLASS="western"># Plot4 = Plot(title = 'new plot')</CODE>
+
+<CODE CLASS="western"># This function is called when pushing the Run button in the control UI.</CODE>
+<CODE CLASS="western">def __run_script__(fns):</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">global Plot1</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">global Plot2</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">global Plot3</CODE>
+<CODE CLASS="western">    </CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western"># check if a list of file names has been given</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">if (fns is None or len(fns) == 0) :</CODE>
+<CODE CLASS="western">        </CODE><CODE CLASS="western">print 'no input datasets'</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">else :</CODE>
+<CODE CLASS="western">        </CODE><CODE CLASS="western">for fn in fns:</CODE>
+<CODE CLASS="western">            </CODE><CODE CLASS="western"># load dataset with each file name</CODE>
+<CODE CLASS="western">            </CODE><CODE CLASS="western">ds = Plot3.ds</CODE>
+<CODE CLASS="western">            </CODE><CODE CLASS="western">if ds != None and len(ds) &gt; 0:</CODE>
+<CODE CLASS="western">                </CODE><CODE CLASS="western">if ds[0].location == fn:</CODE>
+<CODE CLASS="western">                    </CODE><CODE CLASS="western">return</CODE>
+<CODE CLASS="western">            </CODE><CODE CLASS="western">df.datasets.clear()</CODE>
+<CODE CLASS="western">            </CODE><CODE CLASS="western">ds = df[fn]</CODE>
+<CODE CLASS="western">            </CODE><CODE CLASS="western">Plot3.set_dataset(ds[0])</CODE>
+<CODE CLASS="western">    </CODE>
+<CODE CLASS="western">def __dispose__():</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">global Plot1</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">global Plot2</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">global Plot3</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">Plot1.clear()</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">Plot2.clear()</CODE>
+<CODE CLASS="western">    </CODE><CODE CLASS="western">Plot3.clear()</CODE></PRE><P>
+<BR><BR>
+</P>
+</BODY>
+</HTML>
