@@ -139,8 +139,6 @@ def __run_script__(fns):
     df.datasets.clear()                  #Erase previous fiddling
     clear_plot(Plot1)                    #Remove old plots
     mon_path = monitors[mon_choice.value]#Get the NeXuS path
-    Plot1.set_x_label('Step')            #Configure the plot
-    Plot1.set_title('Monitor counts')    #configure the plot
     for fn in fns:                       #Loop over all selected datasets
         ds = df[fn]                      #Create dataset from filename
         mon_counts = Dataset(ds[mon_path]) #Extract monitor counts
@@ -154,6 +152,8 @@ def __run_script__(fns):
         real_mon_counts.title = ds['/entry1/sample/name'] + ':' + mon_choice.value
         Plot1.add_dataset(real_mon_counts)
         Plot1.set_y_label(y_label)       #Set custom y label
+    Plot1.set_x_label('Step')            #Configure the plot
+    Plot1.set_title('Monitor counts')    #configure the plot
              
 def clear_plot(plotname):
     all_datasets = copy(plotname.ds)
@@ -169,14 +169,15 @@ Appendix: setting up Gumtree for Python editing
 You do not have to use Gumtree to edit your scripts - any text editor is acceptable.  If you wish
 to use Gumtree to edit, the following setup steps are necessary.
 
-#. Create a new project (File -> New -> General project)
-#. Click 'Next' and choose a name. The directory for project contents can be anything
-you wish. I tend to find the default choice annoying to navigate to, so would change it.
-#. Click 'Next' and 'Finish'
+#. Create a new project by choosing File -> New -> Project from the menu bar and selecting 'Project' in the 
+       'General' category. 
+#. Click 'Next' and choose a name. The location for project contents can be any directory
+        you wish. I tend to find the default choice annoying to navigate to, so would change it.
+#. Click 'Finish'
 
 Now you can create a Python file within this project:
 
-#. Choose File -> New -> Other -> PyDev Module
-#. Choose a source folder (only choice is the project defined above)
-#. Name the file as you wish, and leave the package and template as is (empty).  Click 'Finish'
-#. The file will appear in an edit window appropriately highlighted.
+#. Choose File -> New -> Other from the menu and select 'File' from the 'General' category. Click 'Next'
+#. Select a source folder (only choice is the project defined above)
+#. Name the file as you wish but with a '.py' extension, and leave the package and template as is (empty).  Click 'Finish'
+#. The file will appear in an edit window appropriately highlighted for Python.

@@ -28,8 +28,6 @@ def __run_script__(fns):
     clear_plot(Plot1)      #Remove old plots
     # Get the NeXuS path
     mon_path = monitors[mon_choice.value]
-    Plot1.set_x_label('Step')
-    Plot1.set_title('Monitor counts')
     for fn in fns:
         ds = df[fn]
         mon_counts = Dataset(ds[mon_path])
@@ -42,6 +40,8 @@ def __run_script__(fns):
         real_mon_counts.title = ds['/entry1/sample/name'] + ':' + mon_choice.value
         Plot1.add_dataset(real_mon_counts)
         Plot1.set_y_label(y_label)
+    Plot1.set_x_label('Step')
+    Plot1.set_title('Monitor counts')
              
 def clear_plot(plotname):
     all_datasets = copy(plotname.ds)

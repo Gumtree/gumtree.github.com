@@ -14,6 +14,8 @@ code without confusion.  Modern version control systems (VCSs) use a 'distribute
 complete copy of the entire history of the code, and the system allows smooth merging and a flow of
 contributions among all of the authors.
 
+![Distributed Version Control (from "Pro Git" by Scott Chacon)](dvcs.png "Distributed Version Control")
+
 In the Gumtree context, it is easy to imagine a number of authors: you at the beamline making a
 quick bugfix; David working on your instrument code in his office; your laptop has another copy where
 you are playing with a new approach.  Version control allows all this work to be recorded and ensures (a)
@@ -70,6 +72,8 @@ branch name will change the working directory source code to that corresponding 
 Of course, we haven't changed anything compared to the code that was downloaded, so there will be no obvious effect
 yet.
 
+![Lots of branches (from "Pro Git" by Scott Chacon)](lots_of_branches.png)
+
 ### Changing code
 
 Change code using whatever editor and filesystem tools you prefer to use.  For this example, I'm simply going to
@@ -99,6 +103,8 @@ where the two files have overlapping changes ('Conflicts') and you
 will have to make decisions about what to do.  A number of fancy text
 editors are available (including within the Gumtree Repository Perspective)
 to ease this task, but we will not cover them here.
+
+![A merge (from "Pro Git" by Scott Chacon)](merge_diagram.png "Merge diagram")
 
 To initiate a merge from one branch to another using Gumtree, switch to the
 branch that you wish to merge into, then right-click and choose
@@ -163,11 +169,13 @@ Appendix: Downloading instrument scripts{#appendix}
 All instrument scripts are kept in [publically-accessible repositories][github].  These repositories can be
 copied to your local instrument using Gumtree as follows:
 
-#. Open the 'Git Repository Exploring' perspective by clicking on the drop-down menu behind the little square
-multi-pane window icon near the top right of your Gumtree window
+#. Open the 'Git Repository Exploring' perspective by clicking 'Git
+repository exploring' in the drop-down menu behind the little square
+multi-pane window icon with a yellow plus near the top right of your Gumtree window
 
-#. Click on 'Clone a Git Repository'. If you already have a Git repository, this will be an icon at the top of
-the left-hand pane, otherwise it will be plain text
+#. Click on 'Clone a Git Repository'. If you already have a Git
+repository, this will be an icon along the top of the left-hand pane,
+otherwise it will be plain text
 
 #. In the Wizard that pops up, choose 'Github' as the repository source. Click 'Next'.
 
@@ -181,11 +189,13 @@ network using your ANSTO credentials.
 
 #. Leave the default list of branches and click 'Next'
 
-#. Choose a directory to hold the repository. This can be anywhere convenient for you and does not have to have any
-relationship to where you installed Gumtree.  Leave everything else at defaults.
+#. Choose a local (i.e. not network) directory to hold the repository. This can be
+anywhere convenient for you and does not have to have any relationship
+to where you installed Gumtree.  Leave everything else at defaults.
 
-#. Click 'Finish'.  If you navigate using your favourite file system browsing tool to the directory from the previous step,
-you will find all of your instrument scripts present.
+#. Click 'Finish'.  If you navigate using your favourite file system
+browser to the directory from the previous step, you will find
+all of your instrument scripts present.
 
 #. In order to successfully run your scripts, you will have to add the directory that they are in 
 to the Python interpreter's `sys.path` variable as described [in a previous module]:

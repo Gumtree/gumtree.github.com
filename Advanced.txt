@@ -95,6 +95,53 @@ ask yourself if there isn't a way to do this using array-based functions.  The p
 can do least squares refinements using hundreds of parameters to model tens of thousands of points in a few seconds, despite 
 being written in Python, by studiously avoiding any access to individual points inside loops.
 
+### Iterators
+
+Where you do need to loop over your data file, (e.g. an array function
+is not available) you can use "iterators" to reduce the amount of
+Python code running behind the scenes.  An 'iterator' is a simple
+object with one useful function called 'next' which returns the next
+bit of whatever you are iterating over.  For example, to iterate over
+the top-level dimension of your data file:
+
+~~~
+>> d = array.arange(4*3*2,[4,3,2])
+>> di = d.__iter__()  #Make an iterator
+>> di.next()
+Array([[0, 1],
+       [2, 3],
+       [4, 5]])
+
+>> di.next()
+Array([[ 6,  7],
+       [ 8,  9],
+       [10, 11]])
+
+~~~
+
+An iterator is implicitly called whenever you write 'for .... in ...', so to loop over all the frames in your file
+you could write `for frame in d` without ever explicitly creating an iterator.  If you want to loop over every value
+in your file, use `item_iter` instead of `iter` to create your iterator:
+
+~~~
+>> dii = d.item_iter()
+>> dii.next()
+0
+>> dii.next()
+1
+~~~
+
+A final type of iterator is the section iterator, which will return a sequence of sections of the specified shape:
+
+~~~
+>> dss = d.section_iter([2,1,2])
+>> dss.next()
+Array([[[0, 1]],
+       [[6, 7]]])
+~~~
+
+If the iterator runs out of array, it will raise a Python `StopIteration` exception, which you should probably catch.
+
 ### Remember that your data are actually in Gumtree/Java, *not* Gumtree/Jython
 
 Applying any Python functions to your data that create lists
@@ -205,9 +252,10 @@ bm1_counts = $entry/monitor/bm1_counts
 ...
 ~~~
 
-These definitions have two key effects:
+These definitions have three key effects:
 (a). You can refer to `p['total_counts']` instead of `p['/entry1/instrument/detector/total_counts']`
 (b). Everything in this file is carried forward as its short alias when you copy a Dataset, rather than being lost.
+(c). You can alternatively refer to a metadata item using dot notation, ie. `p.total_counts`
 
 No need to set `sys.path` every time
 ------------------------------------
@@ -223,6 +271,35 @@ your scripts.
 
 General tricks and traps
 ------------------------
+
+@. A list is really a pointer to somewhere that has a list.  So if you
+write `b=a`, where a is a list, then `b` has only copied `a`, not what
+`a` points to, so changing the list that `b` points to will change `a` as
+well. This was pointed out in the Python tutorial, but I'll repeat it
+here as it applies equally to Gumtree arrays.
+
+~~~
+>> p = df['/home/jrh/programs/echidna/Echidna-Gumtree-Scripts/Data/ECH0010240.nx.hdf']
+>> p_info = p['/entry1/data/total_counts'].storage
+>> p_info
+Array([398780, 400426, 397389, 396069, 394665, 392940, 392092, 390537, 389266, 388009, 
+387585, 385089, 382514, 383374, 384251, 382504, 385486, 385690, 387259, 389860, 392796, 
+394349, 396874, 398675, 399345, 401674, 401111, 402283, 400961, 397716, 398788, 396014, 
+396702, 394601, 392429, 392492, 388871, 388464, 389792, 386564, 388586, 389269, 389872, 
+392280, 396354, 396324, 399189, 402334, 403000, 404058])
+>> q = p_info
+>> q[0] = -1
+>> p_info[0]
+-1
+>> p['/entry1/data/total_counts'][0]
+-1
+>> p_new = df['/home/jrh/programs/echidna/Echidna-Gumtree-Scripts/Data/ECH0010240.nx.hdf']
+>> p_new['/entry1/data/total_counts'][0]
+-1
+~~~
+
+The moral of the story is to use the `copy` method if you want to duplicate the code.  Whenever you perform a calculation,
+you necessarily create a new copy of the object that you calculate on, but not necessarily of any associated arrays.
 
 @. If you edit a file that is imported by your main GUI file, but you don't want to reload your main GUI file, how do you let 
 the system know?  As the console is the same Python interpreter as the GUI, we should be able to just go `reload(demo_script)`.
@@ -297,13 +374,6 @@ you can enclose plot creation in a simple check for global variables:
 if 'Plot4' not in globals():
     Plot4 = Plot(title='My persistent plot')
 ~~~
-
-@. NeXuS nodes disappear
-
-Datasets that are freshly loaded from the filesystem will have a complete set of NeXuS
-nodes that are accessible using the square bracket syntax.  However, once these dataset objects
-have been copied (either by `p = q` or `p = q.copy()`, these nodes are replaced by a subset 
-with much shorter pathnames.  
 
 Another GUI element
 -------------------

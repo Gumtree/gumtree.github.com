@@ -172,8 +172,6 @@ Group(<span class="st">&#39;Monitor Plot&#39;</span>).add(mon_choice,mon_norm)
     df.datasets.clear()                  <span class="co">#Erase previous fiddling</span>
     clear_plot(Plot1)                    <span class="co">#Remove old plots</span>
     mon_path = monitors[mon_choice.value]<span class="co">#Get the NeXuS path</span>
-    Plot1.set_x_label(<span class="st">&#39;Step&#39;</span>)            <span class="co">#Configure the plot</span>
-    Plot1.set_title(<span class="st">&#39;Monitor counts&#39;</span>)    <span class="co">#configure the plot</span>
     <span class="kw">for</span> fn in fns:                       <span class="co">#Loop over all selected datasets</span>
         ds = df[fn]                      <span class="co">#Create dataset from filename</span>
         mon_counts = Dataset(ds[mon_path]) <span class="co">#Extract monitor counts</span>
@@ -187,6 +185,8 @@ Group(<span class="st">&#39;Monitor Plot&#39;</span>).add(mon_choice,mon_norm)
         real_mon_counts.title = ds[<span class="st">&#39;/entry1/sample/name&#39;</span>] + <span class="st">&#39;:&#39;</span> + mon_choice.value
         Plot1.add_dataset(real_mon_counts)
         Plot1.set_y_label(y_label)       <span class="co">#Set custom y label</span>
+    Plot1.set_x_label(<span class="st">&#39;Step&#39;</span>)            <span class="co">#Configure the plot</span>
+    Plot1.set_title(<span class="st">&#39;Monitor counts&#39;</span>)    <span class="co">#configure the plot</span>
              
 <span class="kw">def</span> clear_plot(plotname):
     all_datasets = copy(plotname.ds)
@@ -197,17 +197,16 @@ Group(<span class="st">&#39;Monitor Plot&#39;</span>).add(mon_choice,mon_norm)
 <h2 id="appendix-setting-up-gumtree-for-python-editing">Appendix: setting up Gumtree for Python editing</h2>
 <p>You do not have to use Gumtree to edit your scripts - any text editor is acceptable. If you wish to use Gumtree to edit, the following setup steps are necessary.</p>
 <ol>
-<li>Create a new PyDev project (File -&gt; New -&gt; Other -&gt; PyDev Project)</li>
-<li>Click 'Next' and choose a name. The directory for project contents can be anything you wish. I tend to find the default choice annoying to navigate to, so would change it. The type of the project is 'Jython'. The other options can be left at the defaults.</li>
-<li>Click 'Next' and 'Finish'</li>
-<li>Ignore the request to configure the Python interpreter, and do not open the Pydev perspective either</li>
+<li>Create a new project by choosing File -&gt; New -&gt; Project from the menu bar and selecting 'Project' in the 'General' category.</li>
+<li>Click 'Next' and choose a name. The location for project contents can be any directory you wish. I tend to find the default choice annoying to navigate to, so would change it.</li>
+<li>Click 'Finish'</li>
 </ol>
 <p>Now you can create a Python file within this project:</p>
 <ol>
-<li>Choose File -&gt; New -&gt; Other -&gt; PyDev Module</li>
-<li>Choose a source folder (only choice is the project defined above)</li>
-<li>Name the file as you wish, and leave the package and template as is (empty). Click 'Finish'</li>
-<li>The file will appear in an edit window appropriately highlighted.</li>
+<li>Choose File -&gt; New -&gt; Other from the menu and select 'File' from the 'General' category. Click 'Next'</li>
+<li>Select a source folder (only choice is the project defined above)</li>
+<li>Name the file as you wish but with a '.py' extension, and leave the package and template as is (empty). Click 'Finish'</li>
+<li>The file will appear in an edit window appropriately highlighted for Python.</li>
 </ol>
 </body>
 </html>
